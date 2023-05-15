@@ -1,6 +1,8 @@
 
 import requests
 import time
+import datetime
+from datetime import date
 import openpyxl
 
 def get_products(url):
@@ -13,6 +15,9 @@ urls = [f'https://search.wb.ru/exactmatch/ru/common/v4/search?appType=1&curr=rub
         for i in range(1, 61)
 ]
 all_products =[]
+current_date = date.today()
+current_date_time = datetime.datetime.now()
+current_time = current_date_time.time()
 start = time.time()
 for url in urls:
     all_products += get_products(url)
@@ -32,11 +37,12 @@ for i in range(0, len(all_products)):
     brand_product = all_products[i].setdefault('brand')
     print(title, 'стоит ', price/100, ' рублей')
 
-        #excel_file = openpyxl.load_workbook('skl_b1.xlsx')
     sheet_sheet.cell(row=i + 3, column=2).value = id_product
     sheet_sheet.cell(row=i + 3, column=3).value = title
     sheet_sheet.cell(row=i + 3, column=4).value = brand_product
     sheet_sheet.cell(row=i + 3, column=5).value = price/100
+    sheet_sheet.cell(row=i + 3, column=6).value = current_date
+    sheet_sheet.cell(row=i + 3, column=7).value = current_time
     print( 'Готово!')
 excel_file.save('Base.xlsx')
 
