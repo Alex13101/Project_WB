@@ -1,15 +1,16 @@
-
+from datetime import datetime
 import requests
 import time
 import datetime
+import connect_base
 from datetime import date
-import openpyxl
+
 
 def get_products(url):
     products = requests.get(url).json()['data']['products']
     return products
 
-search = input('Что будем искать? ')
+
 
 
 
@@ -30,32 +31,73 @@ def search_right_product(search):
 # print(len(all_products[1]))
 
 
-long_lst = len(search_right_product(search))
-all_products = search_right_product(search)
 
-excel_file = openpyxl.load_workbook('Base.xlsx')  # Открытие exel-файла
-sheet_sheet = excel_file['Лист1']
+
+
 current_date = date.today()
 current_date_time = datetime.datetime.now()
 current_time = current_date_time.time()
 
-for i in range(0, long_lst):
-    title = all_products[i].setdefault("name")
-    price = all_products[i].setdefault('salePriceU')
-    id_product = all_products[i].setdefault('id')
-    brand_product = all_products[i].setdefault('brand')
-    print(title, 'стоит ', price/100, ' рублей')
 
-    sheet_sheet.cell(row=i + 3, column=2).value = id_product
-    sheet_sheet.cell(row=i + 3, column=3).value = title
-    sheet_sheet.cell(row=i + 3, column=4).value = brand_product
-    sheet_sheet.cell(row=i + 3, column=5).value = price/100
-    sheet_sheet.cell(row=i + 3, column=6).value = current_date
-    sheet_sheet.cell(row=i + 3, column=7).value = current_time
-    #print( 'Готово!')
-excel_file.save('Base.xlsx')
+#user = connect_base.User(name='Alex', email='Podiyachiy-a@mail.ru')
 
-excel_file.close()
+# connect_base.session.add(user)
+# connect_base.session.commit()
+
+user_input = input('Кто ты пользователь? ')
+
+users = connect_base.session.query(connect_base.User).all()
+for userx in users:
+    print(userx.email)
+    if user_input == userx.name:
+        print(f'Привет {userx.name} !')
+        search = input('Что будем искать? - ')  # Вводим запрос
+        discount_amount = input('Каков размер скидки для этого товара устроит? - ')
+        print('Хорошо. Сейчас произведем мониторинг и сформируем базу')
+
+        queryx = connect_base.Query(query=search, discount=discount_amount)  # Записываем в базу запрос и размер скидки
+        connect_base.session.add(queryx)  # Отправляем в базу
+        connect_base.session.commit()
+
+        long_lst = len(search_right_product(search)) # Длина списка товаров
+        all_products = search_right_product(search) # Список всех полученных товаров
+
+        for i in range(0, long_lst): # Идем по списку всех товаров
+            title = all_products[i].setdefault("name")
+            priced = all_products[i].setdefault('salePriceU')
+            price = float(priced/100)
+            id_product = all_products[i].setdefault('id')
+            brand_product = all_products[i].setdefault('brand')
+            print(title, 'стоит ', price, ' рублей')
+
+
+            productsx = connect_base.Product(product_id=id_product, name=title, previous_price=price, price=price, updated_at=current_date_time) # Запись в БД уникальный id-продукта, наименование его
+                                                                                                                                                    # и, для текущего запроса, цена
+            connect_base.session.add(productsx) # Отправляем в базу
+            connect_base.session.commit()
+
+            # notificationx = connect_base.Notification(products_id=id_product, previous_price=price, current_price=0, created_at=datetime.now)
+            #
+            # connect_base.session.add(notificationx)  # Отправляем в базу
+            # connect_base.session.commit()
+
+
+    else:
+        print('Такого пользователя нет пока  ')
+
+
+
+# добавляем запись в таблицу
+# user = User(name='John', age=30)
+# session.add(user)
+# session.commit()
+
+
+# получаем записи из таблицы
+# users = session.query(User).all()
+# for user in users:
+#     print(user.id, user.name, user.age)
+
 
 print(time.time() - start)
 
