@@ -35,14 +35,14 @@ print(search_right_product(search))
 # long_lst = len(all_products)  # Длина списка товаров
 # print(long_lst)
 
-# def demonstation(result):
-#
-#     long_list = len(result)
-#     for x in range(0, long_list):
-#         for it, ku in x.items():
-#             # item — это кортеж (ключ, значение)
-#             print(it, ku)
-#             #print(f'{i}  {key} стоит  {price}  рублей')
+def demonstation(result):
+
+    long_list = len(result)
+    for x in result:
+        for it, ku in x.items():
+            # item — это кортеж (ключ, значение)
+            print(it, ku)
 
 
-#demonstation(search_right_product(search))
+
+demonstation(search_right_product(search))
