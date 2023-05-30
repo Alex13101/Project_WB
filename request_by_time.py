@@ -18,6 +18,10 @@ def run_task():
 schedule.every(2).minutes.do(run_task)  # Можно изменить интервал выполнения задачи
 
 # Бесконечный цикл для выполнения задачи
+
+
 while True:
-    schedule.run_pending()
-    time.sleep(1)
+    try:
+        schedule.run_pending()
+    except Exception as E:
+        time.sleep(1)
