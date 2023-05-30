@@ -18,5 +18,15 @@ def search_right_product(search):
 
 def demonstration(result):
     for x in result:
-        for it, ku in x.items():
-            print(it, ku)
+        for key, value in x.items():
+
+            if key == 'product_id':
+                print(f'артикул - {value}')
+            elif key == 'salePriceU':
+                print(f'цена - {value}')
+            elif key == 'name':
+                print(f'Название - {value}')
+
+
+
+#demonstration(search_right_product())
